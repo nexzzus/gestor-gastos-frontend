@@ -17,13 +17,17 @@
 <div class="border border-gray-300 rounded-lg mt-8 overflow-hidden">
 
   <!-- FECHA Y BOTON Descargar Reporte -->
-  <div class="flex justify-between items-center bg-gray-50 p-4 border-b border-gray-300">
-    <h2 class="text-xl font-semibold text-gray-700 capitalize">{{monthName}} {{year}}</h2>
+  <div class="flex items-center justify-between gap-3 bg-gray-50 p-4 border-b border-gray-300">
+    <h2 class="md:min-w-0 md:truncate text-lg sm:text-xl font-semibold text-gray-700 capitalize">
+      {{ monthName }} {{ year }}
+    </h2>
+
     <button
+      type="button"
       (click)="downloadTransactions()"
-      class="text-secondary flex justify-center items-center gap-1 cursor-pointer font-medium hover:bg-gray-200 px-3 py-1.5 rounded-lg transition-colors">
-      <ng-icon name="matDownloadOutline"/>
-      Descargar Reporte
+      class="shrink-0 whitespace-nowrap flex items-center gap-1.5 cursor-pointer rounded-lg px-3 py-1.5 text-sm sm:text-base font-medium text-secondary transition-colors hover:bg-gray-200">
+      <ng-icon name="matDownloadOutline" size="18" class="shrink-0" />
+      Descargar reporte
     </button>
   </div>
 
