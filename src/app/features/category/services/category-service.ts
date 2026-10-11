@@ -1,9 +1,9 @@
 import { inject, Service } from '@angular/core';
-import { environment } from '../../../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
 import { CategoryCreateModel, CategoryModel } from '../models/category.model';
 import { Observable } from 'rxjs';
 import { PageResponse } from '../../../core/models/api-response.model';
+import { environment } from '@environments/environment';
 
 @Service()
 export class CategoryService {

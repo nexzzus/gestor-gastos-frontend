@@ -1,9 +1,9 @@
 import { inject, Service } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { environment } from '../../../../environments/environment.development';
 import { Observable } from 'rxjs';
 import { SliceResponse } from '../../../core/models/api-response.model';
 import { TransactionResponseModel } from '../models/transactions.model';
+import { environment } from '@environments/environment';
 
 @Service()
 export class TransactionService {
