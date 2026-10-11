@@ -61,7 +61,7 @@
             <div class="text-right">
               <h2 class="text-lg font-bold text-gray-800"
                   [ngClass]="item.type === 'INCOME' ? 'text-green-500': 'text-red-500'">
-                {{ item.type === 'INCOME' ? '+' : '-' }} {{ item.amount | currency:'$':'symbol':'1.0-0' }}</h2>
+                <span class="hidden md:inline md:mr-1">{{ item.type === 'EXPENSE' ? '-' : '+' }}</span>{{ item.amount | currency:'$':'symbol':'1.0-0' }}</h2>
             </div>
 
           </div>
