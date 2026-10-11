@@ -16,6 +16,6 @@ export class NotFound {
   }
 
   goTransctions():void{
-    this.router.navigate(['app/transctions']);
+    this.router.navigate(['app/transactions']);
   }
 }
