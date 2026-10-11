@@ -1,0 +1,47 @@
+<nav class="grid grid-cols-[1fr_auto_1fr] items-center h-16 px-4 py-3">
+
+  <!-- IZQUIERDA: logo -->
+  <div class="flex items-center gap-2 justify-self-start">
+    <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-4">
+      <ng-icon name="matAccountBalanceFillOutline" color="#004731" size="22" />
+    </span>
+    <span class="text-base font-bold text-[#006c49]">FinanzaFlow</span>
+  </div>
+
+  <!-- CENTRO: links -->
+  <div class="flex items-center gap-2 overflow-x-auto">
+    <a
+      class="rounded-lg px-2 py-2 text-sm font-semibold text-gray-700"
+      routerLink="/app/dashboard"
+      routerLinkActive="bg-surface-variant text-primary-3"
+    >
+      <ng-icon name="matDashboardOutline" size="18" />
+    </a>
+
+    <a
+      class="rounded-lg px-2 py-2 text-sm font-semibold text-gray-700"
+      routerLink="/app/transactions"
+      routerLinkActive="bg-surface-variant text-primary-3"
+    >
+      <ng-icon name="matReceiptLongOutline" size="18" />
+    </a>
+
+    <a
+      class="rounded-lg px-2 py-2 text-sm font-semibold text-gray-700"
+      routerLink="/app/budgets"
+      routerLinkActive="bg-surface-variant text-primary-3"
+    >
+      <ng-icon name="matAccountBalanceWalletOutline" size="18" />
+    </a>
+  </div>
+
+  <!-- DERECHA: logout -->
+  <button
+    class="justify-self-end flex items-center justify-center p-2 font-medium text-red-600 cursor-pointer"
+    type="button"
+    aria-label="Cerrar sesión"
+    (click)="logout()"
+  >
+    <ng-icon name="matLogoutOutline" size="20" />
+  </button>
+</nav>

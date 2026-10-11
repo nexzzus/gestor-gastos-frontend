@@ -1,0 +1,141 @@
+<div class="flex sm:flex-col md:flex-row justify-between items-center">
+  <!-- Contenedor izquierdo (Textos) -->
+  <div>
+    <h1 class="text-4xl font-semibold">Resumen financiero</h1>
+    <p class="text-gray-500">Tu estado actual de hoy.</p>
+  </div>
+
+  <app-button
+    (click)="goNewTransaction()"
+    class="hidden md:block"
+    icon="matPlusOutline"
+    text="Nueva Transacción"
+    colorBg="bg-primary-4"
+  />
+</div>
+
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8">
+  <div class="col-span-2 md:col-span-1 lg:col-span-2 bg-linear-to-tr from-white to-[#f7fdfb] p-4 rounded-lg border border-gray-200">
+    <h2 class="font-semibold text-sm text-gray-500 pb-2">BALANCE TOTAL</h2>
+    <span class="font-bold text-xl lg:text-2xl">{{ totalBalance() | currency:'COP':'symbol':'1.0-0' }}</span>
+    <span class="ml-2 text-gray-600 ">COP</span>
+    <br>
+    <div class="flex items-center gap-2 pt-4">
+      <!-- Etiqueta del porcentaje con inline-flex y algo de padding (px-2 py-1) -->
+      <span
+        class="text-sm text-primary-4 bg-surface-container-high px-2 py-1 rounded-full inline-flex justify-center items-center gap-1 font-medium">
+    <ng-icon name="matTrendingUpOutline"></ng-icon>
+    +4.2%
+  </span>
+
+      <!-- Texto descriptivo (sin padding superior propio para que se centre con la etiqueta) -->
+      <p class="text-sm text-slate-600">vs el mes pasado</p>
+    </div>
+  </div>
+
+  <div class="bg-white p-4 rounded-lg border border-gray-200">
+    <h2 class="font-semibold text-sm text-gray-500 mb-4">INGRESOS</h2>
+    <span class="font-semibold text-xl mt-5">{{ income() | currency:'COP':'symbol':'1.0-0' }}</span>
+    <hr class="mt-4 mb-3 text-gray-300">
+    <p class="text-sm text-primary-4 flex justify-center items-center gap-x-1">
+      <ng-icon name="matCheckCircleOutline "/>
+      En camino al objetivo
+    </p>
+  </div>
+
+  <div class="bg-white p-4 rounded-lg border border-gray-200">
+    <h2 class="font-semibold text-sm text-gray-500 mb-4">GASTOS</h2>
+    <span class="font-semibold text-xl">{{ expenses() | currency:'COP':'symbol':'1.0-0' }}</span>
+    <hr class="mt-4 mb-3 text-gray-300">
+    <p class="text-sm text-primary-4 flex justify-center items-center gap-x-1">
+      38% del presupuesto</p>
+  </div>
+</div>
+
+<!--ACTIVIDAD RECIENTE & GASTOS POR CATEGORÍA-->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 mt-5">
+<!--  ACTIVIDAD RECIENTE-->
+  <div class="col-span-2 bg-white border border-gray-200 rounded-lg">
+    <div class="flex justify-between items-center p-4 border-b border-b-gray-200">
+      <h1 class="text-xl font-semibold">Actividad Reciente</h1>
+      <button class="text-blue-600" (click)="goTransactions()">
+        Ver todas
+      </button>
+    </div>
+
+    <table class="w-full text-center">
+      <thead class="bg-gray-50 w-full text-gray-700 text-sm font-thin!">
+      <tr class="h-7">
+        <th>FECHA</th>
+        <th>TÍTULO</th>
+        <th>CATEGORÍA</th>
+        <th>MONTO</th>
+      </tr>
+      </thead>
+      <tbody>
+
+        @for (item of recentActivity(); track item.id) {
+          <tr class="hover:bg-[#e6eeff] border-b-9 border-b-gray-50 h-8 rounded-lg">
+            <td>{{ item.createdAt | date: 'd MMM y' }}</td>
+            <td class="text-md md:text-base">{{ item.title }}</td>
+            <td><p class="bg-surface-variant rounded-full text-xs md:text-sm">{{ item.category.name }}</p></td>
+            <td class="text-{{ item.type === 'EXPENSE' ? 'red' : 'green' }}-800">
+              {{ item.type === 'EXPENSE' ? '-' : '+' }} {{ item.amount | currency:'COP':'symbol':'1.0-0' }}
+            </td>
+          </tr>
+        } @empty {
+          <div class="flex justify-center items-center p-8 text-gray-500">
+            No hay transacciones aún
+          </div>
+        }
+      </tbody>
+    </table>
+  </div>
+
+<!--  GASTOS POR CATEGORÍA-->
+  <div class="bg-white text-center rounded-lg border border-gray-200 mt-5 md:mt-0">
+    <h1 class="pt-4 text-xl font-semibold">Gastos por Categoría</h1>
+
+    @for (expense of expenseByCategory(); track expense.categoryName) {
+     @let status = (expense | statusCategory);
+
+      <div class="flex flex-col p-4 gap-2">
+        <!-- Fila superior -->
+        <div class="flex justify-between items-center">
+
+          <!-- Grupo Izquierdo: Círculo y Texto -->
+          <div class="flex items-center gap-2">
+            <div class="size-3 rounded-full"
+            [ngClass]="styles[status].bg"
+            ></div>
+            <p>{{ expense.categoryName }}</p>
+          </div>
+
+          <!-- Grupo Derecho: Precio -->
+          <p>{{ expense.spentAmount | currency:'COP':'symbol':'1.0-0' }}</p>
+
+        </div>
+
+        <!-- Barra de progreso -->
+        <div class="h-3 w-full overflow-hidden rounded-full bg-gray-200">
+          <div
+            class="h-full rounded-full transition-all"
+            [ngClass]="styles[status].bar"
+            [style.width.%]="Math.min(expense.usedPercentage, 100)"
+          ></div>
+        </div>
+      </div>
+    }
+
+
+  </div>
+</div>
+
+<!--BOTON NUEVA TRANSACCIÓN (MÓVIL)-->
+<app-button
+  (click)="goNewTransaction()"
+  class="fixed bottom-4 right-4 z-10 md:hidden"
+  icon="matPlusOutline"
+  colorBg="bg-primary-4"
+  text=""
+/>

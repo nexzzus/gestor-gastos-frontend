@@ -1,0 +1,82 @@
+<!--TITULO Y DESCRIPCION-->
+<div class="text-center md:text-left">
+  <h1 class="text-3xl font-bold">Nuevo Presupuesto</h1>
+  <p class="text-gray-600">Define el monto límite, el periodo de vigencia y la categoría asignada.</p>
+</div>
+
+<!--FORMULARIO Y RESUMEN-->
+<div class="grid grid-cols-1 md:grid-cols-3 mt-6">
+<!--  FORMULARIO-->
+  <form class="md:col-span-2 bg-white p-4 rounded-lg flex flex-col gap-y-5" [formGroup]="budgetForm" (ngSubmit)="save()">
+    <app-input
+      label="Valor o cantidad del Presupuesto"
+      placeholder="Ingrese el monto límite"
+      id="amount"
+      formControlName="amount"
+      [isCurrency]="true"
+    />
+
+    <div class="flex flex-col gap-y-1">
+      <label for="category">Categoría Asignada</label>
+      <select id="category" formControlName="categoryId">
+        <option disabled selected>Seleccione una categoría</option>
+        @for (category of categories(); track category.id) {
+          <option [value]="category.id">{{ category.name }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="grid grid-cols-2 gap-x-4">
+      <app-input
+        label="Fecha de Inicio"
+        placeholder="Seleccione la fecha de inicio"
+        id="startDate"
+        type="date"
+        formControlName="startDate"
+      />
+      <app-input
+        label="Fecha de Terminación"
+        placeholder="Seleccione la fecha de fin"
+        id="endDate"
+        type="date"
+        formControlName="endDate"
+      />
+    </div>
+
+    <div class="flex justify-center gap-x-7 mt-5">
+      <app-button
+        text="Cancelar"
+        colorBg="bg-transparent"
+        colorText="text-black"
+        (click)="cancel()"
+      />
+
+      <app-button
+        text="Guardar Presupuesto"
+        colorBg="bg-primary-3"
+        colorText="text-white"
+        type="submit"
+      [disabled]="isSubmitted() || budgetForm.invalid"
+      />
+    </div>
+  </form>
+
+<!--  RESUMEN-->
+  <div class="flex flex-col gap-y-3 p-4 bg-white ml-6 rounded-lg md:mt-5">
+    <h4 class="text-lg font-semibold">Resumen Estimado</h4>
+    <hr class="text-gray-300">
+
+    <div class="flex justify-between">
+      <span>Duración del periodo</span>
+      <span class="font-semibold">{{periodDays()}} días</span>
+    </div>
+    <div class="flex justify-between">
+      <span>Límite de gasto diario</span>
+      <span class="font-semibold text-lg text-primary-3">{{limit() | currency:'$': '':'1.0-0'}} / día</span>
+    </div>
+    <div class="flex justify-between">
+      <span>Frecuencia de corte</span>
+      <span class="font-semibold">Mensual</span>
+    </div>
+  </div>
+</div>

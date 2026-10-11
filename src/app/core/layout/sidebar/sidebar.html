@@ -1,0 +1,46 @@
+<aside class="flex h-full shrink-0 flex-col border-r border-gray-200 bg-white overflow-y-auto">
+  <div class="grid grid-cols-4 h-16 items-center px-6 pt-6 mb-6 gap-x-8">
+    <span class="flex rounded-lg block bg-primary-4 w-12 h-12 text-center items-center justify-center">
+      <ng-icon name="matAccountBalanceFillOutline " color="#004731" size="32"/>
+    </span>
+    <div class="col-span-3">
+      <h1 class="text-2xl font-bold text-[#006c49]">FinanzaFlow</h1>
+      <p class="inline text-sm text-gray-400ay">Premium Fintech</p>
+    </div>
+  </div>
+
+  <nav class="flex-1 px-3 pt-3">
+    <a
+      class="flex items-center gap-3 rounded-lg px-3 py-2.5 font-semibold text-gray-700 transition-colors hover:bg-on-surface-variant/10 hover:rounded-lg"
+      routerLink="/app/dashboard"
+      routerLinkActive="bg-surface-variant text-primary-3 rounded-lg shadow-[4px_0_0_0_#006A4E]">
+      <ng-icon name="matDashboardOutline" size="24"/>
+      Dashboard</a>
+
+    <a
+      class="flex items-center gap-3 rounded-lg px-3  py-2.5 font-semibold text-gray-700 transition-colors hover:bg-on-surface-variant/10 hover:rounded-lg"
+      routerLink="/app/transactions"
+      routerLinkActive="bg-surface-variant text-primary-3 rounded-lg shadow-[4px_0_0_0_#006A4E]">
+      <ng-icon name="matReceiptLongOutline " size="24"/>
+      Transacciones</a>
+
+    <a
+      class="flex items-center gap-3 rounded-lg px-3  py-2.5 font-semibold text-gray-700 transition-colors hover:bg-on-surface-variant/10 hover:rounded-lg"
+      routerLink="/app/budgets"
+      routerLinkActive="bg-surface-variant text-primary-3 rounded-lg shadow-[4px_0_0_0_#006A4E]">
+      <ng-icon name="matAccountBalanceWalletOutline" size="24"/>
+      Presupuesto</a>
+  </nav>
+
+  <div class="bottom-0 border border-gray-200 w-full h-12 flex justify-center items-center hover:bg-surface-container-high">
+    <button
+      class="flex justify-center items-center font-medium text-red-600 cursor-pointer size-full"
+      type="button"
+      (click)="logout()"
+    >
+      <ng-icon name="matLogoutOutline " size="20"/>
+      Cerrar Sesión
+    </button>
+
+  </div>
+</aside>

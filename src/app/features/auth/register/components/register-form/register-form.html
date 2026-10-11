@@ -1,0 +1,78 @@
+<div class="flex flex-col justify-center items-center bg-white rounded-lg border border-gray-300 mt-2 w-full lg:w-80%">
+  <h1 class="text-4xl font-semibold text-primary-2 mt-4">FinanzaFlow</h1>
+  <p>Únete a la nueva era financiera</p>
+
+  <form class="p-7 flex flex-col gap-y-3" [formGroup]="registerForm" (ngSubmit)="save()">
+    <!--    NOMBRE Y APELLIDO-->
+    <div class="grid grid-cols-2 gap-x-3">
+      <!--      NOMBRE-->
+      <app-input
+        label="Nombre"
+        placeholder="Ej. Juan"
+        id="firstName"
+        type="text"
+        formControlName="firstName"
+      />
+
+      <app-input
+        label="Apellido"
+        placeholder="Ej. Perez"
+        id="lastName"
+        type="text"
+        formControlName="lastName"
+      />
+    </div>
+
+    <app-input
+      label="Correo Electrónico"
+      placeholder="tu@correo.com"
+      id="email"
+      type="email"
+      autocomplete="email"
+      formControlName="email"/>
+
+    <app-input
+      label="Contraseña"
+      placeholder="••••••••"
+      autocomplete="current-password"
+      type="password"
+      formControlName="password"
+    />
+
+    <app-input
+      label="Confirmar Contraseña"
+      placeholder="••••••••"
+      autocomplete="current-password"
+      type="password"
+      formControlName="confirmPassword"
+    />
+
+    @if (
+      registerForm.hasError('passwordMismatch') &&
+      registerForm.get('confirmPassword')?.touched
+      ) {
+      <p class="mt-1 text-sm text-red-600">
+        Las contraseñas no coinciden.
+      </p>
+    }
+
+
+    <div class="mt-3">
+      <app-button
+        text="Registrarse"
+        colorText="text-white"
+        colorBg="bg-primary-3"
+        type="submit"
+        [disabled]="isSubmitted() || registerForm.invalid"
+      />
+    </div>
+
+    <p class="text-center text-md">
+      ¿Ya tienes una cuenta?
+      <a routerLink="/login" class="text-secondary text-shadow-secondary">
+        Inicia Sesión
+      </a>
+    </p>
+
+  </form>
+</div>

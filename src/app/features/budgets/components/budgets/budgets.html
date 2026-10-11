@@ -1,0 +1,59 @@
+<!--TITULO Y BOTÓN Nueva Transacción-->
+<div class="flex flex-col md:flex-row justify-between items-center">
+  <div class="text-center md:text-left">
+    <h1 class="text-4xl font-semibold">Presupuestos</h1>
+    <p class="text-gray-500">Revisa y gestiona tus presupuestos financieros.</p>
+  </div>
+  <app-button
+    (click)="goNewBudget()"
+    class="hidden md:block"
+    icon="matPlusOutline"
+    colorBg="bg-primary-4"
+    text="Nuevo presupuesto"
+  />
+</div>
+
+<div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 lg:my-6 gap-4 my-5">
+  <div class="bg-white rounded-lg p-4">
+    <span class="text-sm ">LÍMITE TOTAL MENSUAL</span>
+    <h2 class="text-xl font-bold mt-2 mb-6">{{limitTotal() | currency:'COP':'symbol':'1.0-0' }}</h2>
+    <div class="bg-surface-container-high w-full px-6 py-3 rounded-lg">6 categorías activas</div>
+  </div>
+
+  <div class="bg-white rounded-lg p-4">
+    <span class="text-sm ">GASTO ACUMULADO</span>
+    <h2 class="text-xl font-bold mt-2 mb-6">{{accumulatedExpense() | currency:'COP':'symbol':'1.0-0' }}</h2>
+    <div class="bg-surface-container-high w-full px-6 py-3 rounded-lg">
+      <ng-icon name="matTrendingDownOutline"/>
+      {{percentExpenseExecuted() | number:'1.1-2'}} ejecutado</div>
+  </div>
+
+  <div class="bg-white rounded-lg p-4">
+    <span class="text-sm ">DISPONIBLE RESTANTE</span>
+    <h2 class="text-xl font-bold mt-2 mb-6">{{availableRemaining() | currency:'COP':'symbol':'1.0-0' }}</h2>
+    <div class="bg-primary-4/20 w-full px-6 py-3 rounded-lg"
+         [ngClass]="styles[status()].badge"
+    >{{styles[status()].message}}</div>
+  </div>
+
+  <div class="bg-white rounded-lg p-4">
+    <span class="text-sm ">CIERRE DE PERIODO</span>
+    <div class="flex items-center mt-2 mb-6">
+      <h2 class="text-xl font-bold pr-1">{{daysLeft}}</h2>
+      <span>días</span>
+    </div>
+    <div class="bg-surface-container-high w-full px-6 py-3 rounded-lg capitalize">Cierre: {{ lastDay }} de {{monthName}}, 2025</div>
+  </div>
+</div>
+
+<app-budgets-list [budgets]="budgets()"/>
+
+<!--BOTON NUEVA TRANSACCIÓN (MÓVIL)-->
+<app-button
+  (click)="goNewBudget()"
+  class="fixed bottom-5 right-5 z-10 md:hidden"
+  icon="matPlusOutline"
+  colorBg="bg-primary-4"
+  text=""
+/>
+

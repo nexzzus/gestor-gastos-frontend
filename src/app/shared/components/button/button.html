@@ -1,0 +1,11 @@
+<button
+  [type]="type()"
+  [class]="styles()"
+  [disabled]="disabled()">
+  @if (icon() != '') {
+    <ng-icon
+      name="{{icon()}}"
+    />
+  }
+    {{text()}}
+</button>

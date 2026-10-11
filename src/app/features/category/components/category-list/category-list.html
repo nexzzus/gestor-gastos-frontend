@@ -1,0 +1,21 @@
+<table class="w-full border m-5 rounded-lg">
+  <caption class="text-center text-2xl font-bold">Lista de Categorías</caption>
+  <thead>
+  <tr>
+    <th>Categoría</th>
+  </tr>
+  </thead>
+  <tbody>
+    @for (category of categories(); track category.id){
+      <tr>
+        <td>
+          {{category.name}}
+        </td>
+      </tr>
+    } @empty {
+      <tr>
+        <td class="text-center text-gray-500">No hay categorías disponibles.</td>
+      </tr>
+    }
+  </tbody>
+</table>

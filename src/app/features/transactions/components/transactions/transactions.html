@@ -1,0 +1,96 @@
+<!--TITULO Y BOTÓN Nueva Transacción-->
+<div class="flex flex-col md:flex-row justify-between items-center mx-5">
+  <div>
+    <h1 class="text-4xl font-semibold">Historial de Transacciones</h1>
+    <p class="text-gray-500">Revisa y gestiona tus movimientos financieros.</p>
+  </div>
+  <app-button
+    (click)="goNewTransaction()"
+    class="hidden md:block"
+    icon="matPlusOutline"
+    colorBg="bg-primary-4"
+    text="Nueva transacción"
+  />
+</div>
+
+<!--TABLA Y BUSQUEDA-->
+<div class="mx-5 border border-gray-300 rounded-lg mt-8 overflow-hidden">
+
+  <!-- FECHA Y BOTON Descargar Reporte -->
+  <div class="flex justify-between items-center bg-gray-50 p-4 border-b border-gray-300">
+    <h2 class="text-xl font-semibold text-gray-700">Octubre 2026</h2>
+    <button
+      (click)="downloadTransactions()"
+      class="text-secondary flex justify-center items-center gap-1 cursor-pointer font-medium hover:bg-gray-200 px-3 py-1.5 rounded-lg transition-colors">
+      <ng-icon name="matDownloadOutline"/>
+      Descargar Reporte
+    </button>
+  </div>
+
+  <!-- REGISTROS -->
+  <div class="flex flex-col bg-white">
+    @if (data().length > 0) {
+      <!-- Contenedor de la lista en columna -->
+      <div class="flex flex-col w-full">
+        @for (item of data(); track item.id) {
+          <!-- CAPA INDIVIDUAL (FILA) -->
+          <div
+            class="flex justify-between items-center px-4 py-1.5 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors">
+
+            <!-- SECCIÓN IZQUIERDA: Ícono e Info -->
+            <div class="flex items-center gap-4">
+              <!-- ICONO -->
+              <div
+                class="bg-surface-variant text-gray-600 rounded-full border border-gray-300 size-10 flex justify-center items-center">
+                <ng-icon name="matShoppingCartOutline" size="20"/>
+              </div>
+
+              <!-- INFO -->
+              <div class="flex flex-col">
+                <h4 class="font-semibold text-gray-800">{{ item.title }}</h4>
+                <div class="flex items-center gap-2 mt-0.5">
+                  <p class="text-sm text-gray-500">{{ item.createdAt | date: 'd MMM, HH:mm a' }}</p>
+                  <span class="bg-surface-container-high rounded-md text-xs px-2 py-0.5 font-medium text-gray-600">
+                    {{ item.category.name }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECCIÓN DERECHA: Valor -->
+            <div class="text-right">
+              <h2 class="text-lg font-bold text-gray-800"
+                  [ngClass]="item.type === 'INCOME' ? 'text-green-500': 'text-red-500'">
+                {{ item.type === 'INCOME' ? '+' : '-' }} {{ item.amount | currency:'$':'symbol':'1.0-0' }}</h2>
+            </div>
+
+          </div>
+        }
+        @if (hasMore()) {
+          <div class="flex justify-center items-center py-1.5 bg-gray-50 h-11">
+            <button class="text-secondary hover:scale-105 active:scale-95 text-shadow-2xl cursor-pointer size-full"
+            (click)="loadMore()">
+              Cargar más transacciones
+            </button>
+          </div>
+        }
+      </div>
+
+    } @else {
+      <!-- ESTADO VACÍO -->
+      <div class="flex justify-center items-center p-8 text-gray-500">
+        No hay transacciones aún
+      </div>
+    }
+  </div>
+</div>
+
+
+<!--BOTON NUEVA TRANSACCIÓN (MÓVIL)-->
+<app-button
+  (click)="goNewTransaction()"
+  class="fixed bottom-5 right-5 z-10 md:hidden"
+  icon="matPlusOutline"
+  colorBg="bg-primary-4"
+  text=""
+/>
