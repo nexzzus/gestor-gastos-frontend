@@ -80,7 +80,7 @@
             <td class="text-md md:text-base">{{ item.title }}</td>
             <td><p class="bg-surface-variant rounded-full text-xs md:text-sm">{{ item.category.name }}</p></td>
             <td class="text-{{ item.type === 'EXPENSE' ? 'red' : 'green' }}-800">
-              {{ item.type === 'EXPENSE' ? '-' : '+' }} {{ item.amount | currency:'COP':'symbol':'1.0-0' }}
+              <span class="hidden md:block">{{ item.type === 'EXPENSE' ? '-' : '+' }}</span>{{ item.amount | currency:'COP':'symbol':'1.0-0' }}
             </td>
           </tr>
         } @empty {
