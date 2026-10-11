@@ -1,5 +1,5 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { Button } from '../../../../shared/components/button/button';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Button } from '@shared/components/button/button';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { matPlusOutline } from '@ng-icons/material-icons/outline';
 import { matDownloadOutline, matShoppingCartOutline } from '@ng-icons/material-symbols/outline';
@@ -9,10 +9,18 @@ import { Router } from '@angular/router';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { TransactionResponseModel } from '../../models/transactions.model';
 import { TransactionService } from '../../services/transaction-service';
-import { SliceResponse } from '../../../../core/models/api-response.model';
+import { SliceResponse } from '@core/models/api-response.model';
+import { CategoryIconPipe } from '@shared/pipes/category-icon-pipe';
+
+interface DayGroup {
+  date: string;                          // "2026-10-11"
+  label: string;                         // "Hoy", "Ayer" o "sábado, 10 de octubre"
+  total: number;                         // ingresos - gastos del día
+  items: TransactionResponseModel[];
+}
 
 @Component({
-  imports: [Button, NgIcon, DatePipe, CurrencyPipe, NgClass],
+  imports: [Button, NgIcon, DatePipe, CurrencyPipe, NgClass, CategoryIconPipe],
   selector: 'app-transactions',
   styleUrl: './transactions.css',
   templateUrl: './transactions.html',
@@ -23,6 +31,40 @@ export class Transactions implements OnInit {
   private readonly router = inject(Router);
   private readonly toast = inject(HotToastService);
   data = signal<TransactionResponseModel[]>([]);
+
+  groups = computed<DayGroup[]>(() => {
+    const byDay = new Map<string, TransactionResponseModel[]>();
+
+    for (const t of this.data()) {
+      const day = t.createdAt.slice(0, 10); // LocalDateTime ISO -> yyyy-MM-dd
+      const list = byDay.get(day) ?? [];
+      list.push(t);
+      byDay.set(day, list);
+    }
+
+    return [...byDay.entries()].map(([date, items]) => ({
+      date,
+      label: this.dayLabel(date),
+      items,
+      total: items.reduce((sum, t) => sum + (t.type === 'INCOME' ? t.amount : -t.amount), 0),
+    }));
+  });
+
+  private dayLabel(date: string): string {
+    const d = new Date(`${date}T00:00:00`); // evita el desfase de zona horaria
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const diffDays = Math.round((today.getTime() - d.getTime()) / 86_400_000);
+    if (diffDays === 0) return 'Hoy';
+    if (diffDays === 1) return 'Ayer';
+
+    return d.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long' });
+  }
+
+  today = new Date();
+  year = new Date().getFullYear();
+  monthName = this.today.toLocaleDateString('es-CO', { month: 'long' });
 
   currentPage = 0;
   readonly pageSize = 5;
@@ -41,34 +83,33 @@ export class Transactions implements OnInit {
 
     this.loading.set(true);
 
-    this.transactionService.getTransactions(this.currentPage, this.pageSize).pipe(
-      this.toast.observe({
-        loading: 'Cargando transacciones...',
-        success: this.currentPage === 0
-          ? 'Transacciones cargadas'
-        : "Más transacciones cargadas",
-        error: 'No se pudieron cargar las transacciones'
-      })
-    ).subscribe({
-      next: (data: SliceResponse<TransactionResponseModel>) => {
-        console.log(data)
-        this.data.update((current) => [
-          ...current, ...data.content
-          ]);
-        console.log('data', this.data());
-        console.log('data', this.data());
+    this.transactionService
+      .getTransactions(this.currentPage, this.pageSize)
+      .pipe(
+        this.toast.observe({
+          loading: 'Cargando transacciones...',
+          success: this.currentPage === 0 ? 'Transacciones cargadas' : 'Más transacciones cargadas',
+          error: 'No se pudieron cargar las transacciones',
+        }),
+      )
+      .subscribe({
+        next: (data: SliceResponse<TransactionResponseModel>) => {
+          console.log(data);
+          this.data.update((current) => [...current, ...data.content]);
+          console.log('data', this.data());
+          console.log('data', this.data());
 
-        this.hasMore.set(!data.last);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        console.error(err);
-        this.loading.set(false);
-      },
-    });
+          this.hasMore.set(!data.last);
+          this.loading.set(false);
+        },
+        error: (err) => {
+          console.error(err);
+          this.loading.set(false);
+        },
+      });
   }
 
-  loadMore(): void{
+  loadMore(): void {
     if (!this.hasMore() || this.loading()) {
       return;
     }

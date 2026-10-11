@@ -18,7 +18,7 @@
 
   <!-- FECHA Y BOTON Descargar Reporte -->
   <div class="flex justify-between items-center bg-gray-50 p-4 border-b border-gray-300">
-    <h2 class="text-xl font-semibold text-gray-700">Octubre 2026</h2>
+    <h2 class="text-xl font-semibold text-gray-700 capitalize">{{monthName}} {{year}}</h2>
     <button
       (click)="downloadTransactions()"
       class="text-secondary flex justify-center items-center gap-1 cursor-pointer font-medium hover:bg-gray-200 px-3 py-1.5 rounded-lg transition-colors">
@@ -28,58 +28,69 @@
   </div>
 
   <!-- REGISTROS -->
-  <div class="flex flex-col bg-white">
+  <div class="flex flex-col overflow-hidden rounded-lg bg-white">
     @if (data().length > 0) {
-      <!-- Contenedor de la lista en columna -->
-      <div class="flex flex-col w-full">
-        @for (item of data(); track item.id) {
-          <!-- CAPA INDIVIDUAL (FILA) -->
-          <div
-            class="flex justify-between items-center px-4 py-1.5 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors">
 
-            <!-- SECCIÓN IZQUIERDA: Ícono e Info -->
-            <div class="flex items-center gap-4">
-              <!-- ICONO -->
-              <div
-                class="bg-surface-variant text-gray-600 rounded-full border border-gray-300 size-10 flex justify-center items-center">
-                <ng-icon name="matShoppingCartOutline" size="20"/>
-              </div>
+      @for (group of groups(); track group.date) {
+        <section>
 
-              <!-- INFO -->
-              <div class="flex flex-col">
-                <h4 class="font-semibold text-gray-800">{{ item.title }}</h4>
-                <div class="flex items-center gap-2 mt-0.5">
-                  <p class="text-sm text-gray-500">{{ item.createdAt | date: 'd MMM, HH:mm a' }}</p>
-                  <span class="bg-surface-container-high rounded-md text-xs px-2 py-0.5 font-medium text-gray-600">
+          <!-- Encabezado del día -->
+          <header class="flex items-center justify-between gap-3 bg-gray-50 px-4 py-2 text-xs font-semibold text-gray-500">
+            <span class="capitalize">{{ group.label }}</span>
+            <span class="tabular-nums" [ngClass]="group.total >= 0 ? 'text-green-600' : 'text-red-600'">
+            {{ group.total > 0 ? '+' : '' }}{{ group.total | currency:'COP':'symbol-narrow':'1.0-0' }}
+          </span>
+          </header>
+
+          <!-- Filas del día -->
+          <ul>
+            @for (item of group.items; track item.id) {
+              <li class="flex items-center gap-3 border-b border-gray-100 px-4 py-3 transition-colors last:border-b-0 hover:bg-gray-50">
+
+                <!-- Ícono por categoría, teñido según ingreso/gasto -->
+                <div
+                  class="grid size-10 shrink-0 place-items-center rounded-full"
+                  [ngClass]="item.type === 'INCOME' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'">
+                  <ng-icon [name]="item.category.name | categoryIcon" size="20" />
+                </div>
+
+                <!-- Título, categoría y hora -->
+                <div class="min-w-0 flex-1">
+                  <h4 class="truncate font-semibold text-gray-800">{{ item.title }}</h4>
+                  <div class="mt-0.5 flex items-center gap-2 text-xs text-gray-500">
+                  <span class="truncate rounded-md bg-surface-container-high px-2 py-0.5 font-medium text-gray-600">
                     {{ item.category.name }}
                   </span>
+                    <span class="shrink-0">{{ item.createdAt | date: 'h:mm a' }}</span>
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            <!-- SECCIÓN DERECHA: Valor -->
-            <div class="text-right">
-              <h2 class="text-lg font-bold text-gray-800"
-                  [ngClass]="item.type === 'INCOME' ? 'text-green-500': 'text-red-500'">
-                <span class="hidden md:inline md:mr-1 text-sm md:text-base">{{ item.type === 'EXPENSE' ? '-' : '+' }}</span>{{ item.amount | currency:'$':'symbol':'1.0-0' }}</h2>
-            </div>
+                <!-- Monto -->
+                <p
+                  class="shrink-0 text-right text-base font-bold tabular-nums sm:text-lg"
+                  [ngClass]="item.type === 'INCOME' ? 'text-green-600' : 'text-red-600'">
+                  {{ item.type === 'EXPENSE' ? '-' : '+' }}{{ item.amount | currency:'COP':'symbol-narrow':'1.0-0' }}
+                </p>
+              </li>
+            }
+          </ul>
+        </section>
+      }
 
-          </div>
-        }
-        @if (hasMore()) {
-          <div class="flex justify-center items-center py-1.5 bg-gray-50 h-11">
-            <button class="text-secondary hover:scale-105 active:scale-95 text-shadow-2xl cursor-pointer size-full"
-            (click)="loadMore()">
-              Cargar más transacciones
-            </button>
-          </div>
-        }
-      </div>
+      @if (hasMore()) {
+        <button
+          type="button"
+          class="w-full cursor-pointer border-t border-gray-100 bg-gray-50 py-3 text-sm font-semibold text-secondary transition-colors hover:bg-gray-100 active:bg-gray-200"
+          (click)="loadMore()">
+          Cargar más transacciones
+        </button>
+      }
 
     } @else {
-      <!-- ESTADO VACÍO -->
-      <div class="flex justify-center items-center p-8 text-gray-500">
-        No hay transacciones aún
+      <!-- Estado vacío -->
+      <div class="flex flex-col items-center gap-1 p-10 text-center">
+        <p class="font-semibold text-gray-700">No hay transacciones aún</p>
+        <p class="text-sm text-gray-500">Cuando registres un movimiento, aparecerá aquí.</p>
       </div>
     }
   </div>
