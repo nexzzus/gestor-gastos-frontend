@@ -49,7 +49,7 @@
           <!-- Filas del día -->
           <ul>
             @for (item of group.items; track item.id) {
-              <li class="flex items-center gap-3 border-b border-gray-100 px-4 py-3 transition-colors last:border-b-0 hover:bg-gray-50">
+              <li class="flex items-center gap-2 border-b border-gray-100 p2-4 py-3 transition-colors last:border-b-0 hover:bg-gray-50">
 
                 <!-- Ícono por categoría, teñido según ingreso/gasto -->
                 <div
@@ -71,9 +71,9 @@
 
                 <!-- Monto -->
                 <p
-                  class="shrink-0 text-right text-base font-bold tabular-nums sm:text-lg"
+                  class="shrink-0 text-right font-bold tabular-nums text-sm md:text-base"
                   [ngClass]="item.type === 'INCOME' ? 'text-green-600' : 'text-red-600'">
-                  {{ item.type === 'EXPENSE' ? '-' : '+' }}{{ item.amount | currency:'COP':'symbol-narrow':'1.0-0' }}
+                  <span class="hidden md:inline">{{ item.type === 'EXPENSE' ? '-' : '+' }}</span>{{ item.amount | currency:'COP':'symbol-narrow':'1.0-0' }}
                 </p>
 
                 <app-options-menu
