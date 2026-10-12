@@ -75,6 +75,12 @@
                   [ngClass]="item.type === 'INCOME' ? 'text-green-600' : 'text-red-600'">
                   {{ item.type === 'EXPENSE' ? '-' : '+' }}{{ item.amount | currency:'COP':'symbol-narrow':'1.0-0' }}
                 </p>
+
+                <app-options-menu
+                [options]="menuOptions"
+                position="down"
+                (selected)="onMenuSelect($event, item)"
+                />
               </li>
             }
           </ul>

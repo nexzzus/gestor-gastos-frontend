@@ -11,16 +11,23 @@ import { TransactionResponseModel } from '../../models/transactions.model';
 import { TransactionService } from '../../services/transaction-service';
 import { SliceResponse } from '@core/models/api-response.model';
 import { CategoryIconPipe } from '@shared/pipes/category-icon-pipe';
+import { MenuOption, OptionsMenu } from '@shared/components/options-menu/options-menu';
+import { Observable } from 'rxjs';
+import { ExpensesService } from '@features/transactions/services/expenses-service';
+import { IncomesService } from '@features/transactions/services/incomes-service';
+import { HttpErrorResponse } from '@angular/common/http';
+
+type TransactionType = 'INCOME' | 'EXPENSE';
 
 interface DayGroup {
-  date: string;                          // "2026-10-11"
-  label: string;                         // "Hoy", "Ayer" o "sábado, 10 de octubre"
-  total: number;                         // ingresos - gastos del día
+  date: string; // "2026-10-11"
+  label: string; // "Hoy", "Ayer" o "sábado, 10 de octubre"
+  total: number; // ingresos - gastos del día
   items: TransactionResponseModel[];
 }
 
 @Component({
-  imports: [Button, NgIcon, DatePipe, CurrencyPipe, NgClass, CategoryIconPipe],
+  imports: [Button, NgIcon, DatePipe, CurrencyPipe, NgClass, CategoryIconPipe, OptionsMenu],
   selector: 'app-transactions',
   styleUrl: './transactions.css',
   templateUrl: './transactions.html',
@@ -28,6 +35,8 @@ interface DayGroup {
 })
 export class Transactions implements OnInit {
   private readonly transactionService = inject(TransactionService);
+  private readonly incomeService = inject(IncomesService);
+  private readonly expenseService = inject(ExpensesService);
   private readonly router = inject(Router);
   private readonly toast = inject(HotToastService);
   data = signal<TransactionResponseModel[]>([]);
@@ -94,6 +103,7 @@ export class Transactions implements OnInit {
       )
       .subscribe({
         next: (data: SliceResponse<TransactionResponseModel>) => {
+          this.data.set([]);
           console.log(data);
           this.data.update((current) => [...current, ...data.content]);
           console.log('data', this.data());
@@ -144,5 +154,41 @@ export class Transactions implements OnInit {
 
   goNewTransaction(): void {
     this.router.navigate(['app/transactions/new']);
+  }
+
+
+private readonly deleters: Record<TransactionType, (id: string) => Observable<void>> = {
+  INCOME: (id) => this.incomeService.deleteIncome(id),
+  EXPENSE: (id) => this.expenseService.deleteExpense(id),
+};
+
+deleteTransaction(transaction: TransactionResponseModel): void {
+  this.deleters[transaction.type](transaction.id)
+    .pipe(
+      this.toast.observe({
+        loading: 'Eliminando...',
+        success: 'Transacción eliminada',
+        error: (err: unknown) =>
+          (err as HttpErrorResponse).error?.message ?? 'Error al eliminar la transacción',
+      }),
+    )
+    .subscribe({
+      next: () => this.loadData(), // recarga la lista
+      error: (err) => console.error(err),
+    });
+}
+
+  menuOptions: MenuOption[] = [
+    { id: 'edit', label: 'Editar' },
+    { id: 'delete', label: 'Eliminar', danger: true },
+  ];
+
+  onMenuSelect(action: string, transaction: TransactionResponseModel): void {
+    if (action === 'edit') {
+      console.log('Editar', transaction.id);
+    }
+    if (action === 'delete') {
+     this.deleteTransaction(transaction);
+    }
   }
 }

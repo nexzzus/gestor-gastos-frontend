@@ -1,0 +1,32 @@
+<button
+  #trigger
+  type="button"
+  aria-label="Más opciones"
+  aria-haspopup="menu"
+  [attr.aria-expanded]="open()"
+  class="grid size-8 cursor-pointer place-items-center rounded-full text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900"
+  (click)="toggle(trigger)">
+  <ng-icon name="matMoreVertOutline" size="24" />
+</button>
+
+@if (open()) {
+  <div
+    role="menu"
+    class="fixed z-50 w-44 overflow-hidden rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
+    [style.top]="menuPos().top"
+    [style.bottom]="menuPos().bottom"
+    [style.right]="menuPos().right">
+
+    @for (option of options(); track option.id) {
+      <button
+        type="button"
+        role="menuitem"
+        class="block w-full cursor-pointer px-4 py-2 text-left text-sm transition-colors hover:bg-gray-50"
+        [class.text-red-600]="option.danger"
+        [class.text-slate-700]="!option.danger"
+        (click)="select(option)">
+        {{ option.label }}
+      </button>
+    }
+  </div>
+}

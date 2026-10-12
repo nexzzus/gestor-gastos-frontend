@@ -9,7 +9,11 @@ export class ExpensesService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/expense`;
 
-  create(req: TransactionRequestModel): Observable<TransactionResponseModel>{
+  create(req: TransactionRequestModel): Observable<TransactionResponseModel> {
     return this.http.post<TransactionResponseModel>(this.apiUrl, req);
+  }
+
+  deleteExpense(id: string):Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }
