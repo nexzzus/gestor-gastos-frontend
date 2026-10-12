@@ -75,7 +75,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideHttpClient(withInterceptors([authInterceptor])),
-    provideHotToastConfig({ theme: 'toast', position: 'top-center', duration: 2200, autoClose: true,dismissible: true }),
+    provideHotToastConfig({ theme: 'toast', position: 'top-center', duration: 2000, autoClose: true}),
     provideEnvironmentNgxMask(),
     { provide: LOCALE_ID, useValue: 'es-CO' },
   ],
