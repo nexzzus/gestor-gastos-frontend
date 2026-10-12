@@ -45,23 +45,13 @@
       </div>
 
       <!-- CONTRASEÑA -->
-      <div class="flex flex-col gap-y-4 xl:gap-y-1">
-
-        <div class="grid grid-cols-2">
+      <div class="flex flex-col">
           <label
             for="password"
-            class="text-sm font-medium text-gray-700"
+            class="font-medium text-gray-700"
           >
             Contraseña
           </label>
-
-          <a
-            routerLink="/forgot-password"
-            class="text-right text-sm text-blue-700 hover:underline whitespace-nowrap"
-          >
-            ¿Olvidaste tu contraseña?
-          </a>
-        </div>
 
         <app-input
           id="password"
@@ -70,6 +60,14 @@
           autocomplete="current-password"
           formControlName="password"
         />
+
+        <a
+          routerLink="/forgot-password"
+          class="text-right text-sm text-blue-700 hover:underline whitespace-nowrap mt-2"
+        >
+          ¿Olvidaste tu contraseña?
+        </a>
+
 
       </div>
 
