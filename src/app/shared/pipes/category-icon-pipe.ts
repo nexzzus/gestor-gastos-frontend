@@ -16,6 +16,8 @@ export class CategoryIconPipe implements PipeTransform {
     ENTRETENIMIENTO: 'solarStream',
     ROPA: 'solarTShirt',
     TECNOLOGIA: 'solarDevices',
+    ANTOJOS: 'matPaymentsOutline',
+    PRESTAMOS: 'matCookieOutline',
   };
 
   transform(categoryName: string | undefined): string {
