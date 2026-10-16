@@ -7,13 +7,13 @@ import { TransactionRequestModel } from '../../models/transactions.model';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ExpensesService } from '../../services/expenses-service';
 import { IncomesService } from '../../services/incomes-service';
-import { CategoryModel } from '../../../../core/models/category.model';
+import { CategoryModel } from '@core/models/category.model';
 import { CategoryService } from '../../../category/services/category-service';
-import { PageResponse } from '../../../../core/models/api-response.model';
-import { InputComponent } from '../../../../shared/components/input/input';
+import { PageResponse } from '@core/models/api-response.model';
+import { InputComponent } from '@shared/components/input/input';
 import { Router } from '@angular/router';
 import { HotToastService } from '@ngxpert/hot-toast';
-import { Button } from '../../../../shared/components/button/button';
+import { Button } from '@shared/components/button/button';
 
 @Component({
   imports: [
@@ -54,11 +54,11 @@ export class TransactionsForm implements OnInit {
 
   transactForm = this.fb.group({
     type: ['gasto', Validators.required],
-    amount: [0, [Validators.required, Validators.min(0.01)]],
+    amount: [null as number | null, [Validators.required, Validators.min(0.01)]],
     // date: ['', Validators.required], // yyyy-MM-dd
     // hour: ['', Validators.required], // HH:mm o HH:mm:ss
     title: ['', [Validators.required, Validators.minLength(3)]],
-    description: ['', [Validators.required, Validators.minLength(5)]],
+    description: [null, [Validators.required, Validators.minLength(5)]],
     category: ['', Validators.required],
     paymentMethod: ['', Validators.required],
   });
@@ -78,27 +78,12 @@ export class TransactionsForm implements OnInit {
       return;
     }
 
-    if (this.userData) {
-      try {
-        const user = JSON.parse(this.userData);
-        this.userId = user.id;
-      } catch (e) {
-        console.error('Error al analizar los datos del usuario en localStorage', e);
-      }
-    }
-
-    if (!this.userId) {
-      console.warn('No hay un usuario autenticado para cargar el dashboard.');
-      return;
-    }
-
     const dto: TransactionRequestModel = {
       title: this.transactForm.value.title!,
       amount: this.transactForm.value.amount!,
       // createdAt: this.buildLocalDateTime()!,
       categoryId: this.transactForm.value.category!,
       description: this.transactForm.value.description!,
-      userId: this.userId,
       paymentMethod: this.transactForm.value.paymentMethod!,
     };
 
@@ -128,9 +113,9 @@ export class TransactionsForm implements OnInit {
       next: () => {
         this.transactForm.reset({
           type: 'gasto',
-          amount: 0,
+          amount: null,
           title: '',
-          description: '',
+          description: null,
           category: '',
           paymentMethod: '',
         });
@@ -166,9 +151,10 @@ export class TransactionsForm implements OnInit {
   }
 
   summer(value: number) {
-    const actual = this.transactForm.get('amount')?.value ?? 0;
+    const raw = this.transactForm.get('amount')?.value;
+    const actual = Number(raw) || 0;
     const nuevo = Math.round((actual + value) * 100) / 100;
-    this.transactForm.get('amount')?.setValue(nuevo);
+    (this.transactForm.get('amount') as any)?.setValue(nuevo);
   }
 
   colorClase = computed(() =>

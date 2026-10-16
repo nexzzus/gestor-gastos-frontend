@@ -1,12 +1,12 @@
-import { CategoryModel } from '../../../core/models/category.model';
+import { CategoryModel } from '@core/models/category.model';
 
 export interface TransactionRequestModel {
   title: string;
   amount: number;
   // createdAt: string;
   categoryId: string;
-  userId: string;
-  description: string;
+  // userId: string;
+  description?: string;
   paymentMethod: string;
 }
 
