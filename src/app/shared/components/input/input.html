@@ -2,6 +2,11 @@
   @if (label()) {
     <label [for]="inputId()" class="input-label">
       {{ label() }}
+      @if (required) {
+        <span class="text-red-500 ml-1">*</span>
+      } @else {
+        <span class="text-slate-400 font-normal text-sm ml-1">(opcional)</span>
+      }
     </label>
   }
 

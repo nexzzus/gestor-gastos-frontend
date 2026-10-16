@@ -58,7 +58,7 @@ export class TransactionsForm implements OnInit {
     // date: ['', Validators.required], // yyyy-MM-dd
     // hour: ['', Validators.required], // HH:mm o HH:mm:ss
     title: ['', [Validators.required, Validators.minLength(3)]],
-    description: [null, [Validators.required, Validators.minLength(5)]],
+    description: [null, [Validators.minLength(5)]],
     category: ['', Validators.required],
     paymentMethod: ['', Validators.required],
   });
