@@ -103,7 +103,7 @@ export class Transactions implements OnInit {
       )
       .subscribe({
         next: (data: SliceResponse<TransactionResponseModel>) => {
-          this.data.set([]);
+          // this.data.set([]);
           console.log(data);
           this.data.update((current) => [...current, ...data.content]);
           console.log('data', this.data());
