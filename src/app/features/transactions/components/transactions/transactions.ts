@@ -173,9 +173,12 @@ deleteTransaction(transaction: TransactionResponseModel): void {
       }),
     )
     .subscribe({
-      next: () => this.loadData(), // recarga la lista
-      error: (err) => console.error(err),
-    });
+          next: () => {
+            // Eliminar localmente para actualizar la lista sin recargar páginas completas
+            this.data.update((current) => current.filter((t) => t.id !== transaction.id));
+          },
+          error: (err) => console.error(err),
+        });
 }
 
   menuOptions: MenuOption[] = [
