@@ -1,5 +1,5 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { Button } from '../../../../shared/components/button/button';
+import { Component, computed, inject, Input, OnInit, signal } from '@angular/core';
+import { Button } from '@shared/components/button/button';
 import { Router } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 import { BudgetsService } from '@features/budgets/services/budgets-service';
@@ -12,6 +12,7 @@ import { CurrencyPipe, DecimalPipe, NgClass } from '@angular/common';
 import { BudgetStatus, STATUS_STYLES } from '@shared/constants/budget-status-styles';
 
 @Component({
+  standalone: true,
   imports: [Button, NgIcon, BudgetsList, CurrencyPipe, DecimalPipe, NgClass],
   selector: 'app-budgets',
   styleUrl: './budgets.css',
@@ -34,6 +35,7 @@ export class Budgets implements OnInit {
   styles = STATUS_STYLES;
 
   budgets = signal<BudgetModel[]>([]);
+  activeBudget = computed(() => this.budgets().length);
 
   // Todo se deriva de `budgets`: no hace falta signals separados
   limitTotal = computed(() => this.budgets().reduce((sum, m) => sum + m.budget.amount, 0));

@@ -26,10 +26,11 @@ export interface RecentActivityResponseModel {
   };
 }
 
-// export interface ExpensesByCategoryModel {
-//   categoryName: string;
-//   totalAmount: number;
-// }
+export interface ExpensesByCategoryModel {
+  categoryId?: string;
+  categoryName: string;
+  totalAmount: number;
+}
 
 export interface ExpensesByCategoryProgressModel{
   categoryId: string
@@ -45,7 +46,7 @@ export interface DashBoardResponseModel {
   totalBalance: number;
   totalIncome: number;
   totalExpense: number;
-  // expensesByCategory: ExpensesByCategoryModel[];
+  expensesByCategory: ExpensesByCategoryModel[];
   recentActivity: RecentActivityResponseModel[];
   budgetsByCategory: ExpensesByCategoryProgressModel[];
 }
