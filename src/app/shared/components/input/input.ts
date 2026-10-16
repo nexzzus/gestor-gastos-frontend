@@ -65,7 +65,7 @@ export class InputComponent implements ControlValueAccessor {
   value = signal('');
   disabled = false;
   showPassword = false;
-  required = true;
+  required = input<boolean>(true);
 
   // ─────────────────────────────────────
   // ControlValueAccessor
