@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">GestorGastos</string>
+    <string name="title_activity_main">GestorGastos</string>
+    <string name="package_name">com.mateo.gestorgastos</string>
+    <string name="custom_url_scheme">com.mateo.gestorgastos</string>
+</resources>
