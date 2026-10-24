@@ -6,6 +6,7 @@ import { MainLayout } from './core/layout/main-layout/main-layout';
 import { RegisterForm } from './features/auth/register/components/register-form/register-form';
 import { AuthCallback } from './features/auth/auth-callback/auth-callback';
 import { NotFound } from '@features/not-found/components/not-found/not-found';
+import { guestGuard } from '@core/guards/guest-guard';
 
 export const routes: Routes = [
   // AUTH
@@ -22,11 +23,13 @@ export const routes: Routes = [
         path: 'login',
         component: LoginForm,
         title: 'Iniciar Sesión',
+        canActivate: [guestGuard],
       },
       {
         path: 'register',
         component: RegisterForm,
         title: 'Registro',
+        canActivate: [guestGuard],
       },
       {
         path: 'auth/callback',
@@ -64,5 +67,5 @@ export const routes: Routes = [
       },
     ],
   },
-  {path: '**', component: NotFound}
+  { path: '**', component: NotFound },
 ];

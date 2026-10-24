@@ -10,6 +10,8 @@ import { AuthResponseModel } from '../../../../../core/models/auth.model';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { Button } from '../../../../../shared/components/button/button';
 import { environment } from '../../../../../../environments/environment';
+import { Browser } from '@capacitor/browser';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   imports: [ReactiveFormsModule, InputComponent, NgIcon, Button, RouterLink],
@@ -64,6 +66,14 @@ export class LoginForm {
   }
 
   loginGoogle(): void {
-    window.location.href = `${this.apiUrl}/oauth2/authorization/google`;
+    const url = `${this.apiUrl}/oauth2/authorization/google`;
+
+    if (Capacitor.isNativePlatform()) {
+      // En la app: abrir en Chrome y marcar que viene de la app
+      Browser.open({ url: `${url}?client=app` });
+    } else {
+      // En la web: comportamiento de siempre
+      window.location.href = url;
+    }
   }
 }

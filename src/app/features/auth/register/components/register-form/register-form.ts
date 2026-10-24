@@ -1,21 +1,19 @@
 import { Component, inject, signal } from '@angular/core';
-import { InputComponent } from '../../../../../shared/components/input/input';
+import { InputComponent } from '@shared/components/input/input';
 import {
   AbstractControl,
   FormBuilder,
-  FormGroup,
   ReactiveFormsModule,
   ValidationErrors,
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { Button } from '../../../../../shared/components/button/button';
+import { Button } from '@shared/components/button/button';
 import { Router, RouterLink } from '@angular/router';
-import { NgClass } from '@angular/common';
 import { RegisterRequestModel } from '../../models/register.model';
-import { AuthService } from '../../../../../core/services/auth-service';
+import { AuthService } from '@core/services/auth-service';
 import { HotToastService } from '@ngxpert/hot-toast';
-import { AuthResponseModel } from '../../../../../core/models/auth.model';
+import { AuthResponseModel } from '@core/models/auth.model';
 
 @Component({
   imports: [InputComponent, ReactiveFormsModule, Button, RouterLink],
