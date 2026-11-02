@@ -94,12 +94,19 @@
     <div class="mt-9">
       <h1 class="text-2xl font-medium">Detalles del movimiento</h1>
       <div class="grid grid-cols-2 gap-x-4 mt-8">
-        <div class="flex flex-col">
-          <label for="category">Categoría <span class="text-red-500 ml-1">*</span></label>
-          <select name="category" id="category" formControlName="category" class="">
+        <div class="flex flex-col min-w-0">
+          <label for="category" class="input-label whitespace-nowrap text-sm sm:text-base">Categoría <span class="text-red-500 ml-1">*</span></label>
+          <select
+            name="category"
+            id="category"
+            formControlName="category"
+            class="w-full min-w-0"
+            [class.border-red-500]="transactForm.get('category')?.touched && transactForm.get('category')?.invalid"
+          >
             @if (type() === 'ingreso') {
               <option value="{{incomeCategoryId()}}" selected>INGRESO</option>
             } @else {
+              <option value="" disabled selected hidden>Seleccionar</option>
               @for (category of categories(); track category.id) {
                 @if (category.name !== 'INGRESO') {
                   <option value="{{category.id}}">
@@ -109,15 +116,28 @@
               }
             }
           </select>
+          @if (transactForm.get('category')?.touched && transactForm.get('category')?.invalid) {
+            <span class="text-xs text-red-500 mt-1">Este campo es obligatorio</span>
+          }
         </div>
-        <div>
-          <label for="paymentMethod">Método de pago <span class="text-red-500 ml-1">*</span></label>
-          <select name="paymentMethod" id="paymentMethod" formControlName="paymentMethod" class="w-ful">
-            <option value="EFECTIVO">EFECTIVO</option>
-            <option value="TARJETA_CREDITO">TARJETA_CREDITO</option>
-            <option value="TARJETA_DEBITO">TARJETA_DEBITO</option>
-            <option value="TRANSFERENCIA_BANCARIA">TRANSFERENCIA_BANCARIA</option>
+        <div class="flex flex-col min-w-0">
+          <label for="paymentMethod" class="input-label whitespace-nowrap text-sm sm:text-base">Método de pago <span class="text-red-500 ml-1">*</span></label>
+          <select
+            name="paymentMethod"
+            id="paymentMethod"
+            formControlName="paymentMethod"
+            class="w-full min-w-0"
+            [class.border-red-500]="transactForm.get('paymentMethod')?.touched && transactForm.get('paymentMethod')?.invalid"
+          >
+            <option value="" disabled selected hidden>Seleccionar</option>
+            <option value="EFECTIVO">Efectivo</option>
+            <option value="TARJETA_CREDITO">Tarjeta de crédito</option>
+            <option value="TARJETA_DEBITO">Tarjeta de débito</option>
+            <option value="TRANSFERENCIA_BANCARIA">Transferencia bancaria</option>
           </select>
+          @if (transactForm.get('paymentMethod')?.touched && transactForm.get('paymentMethod')?.invalid) {
+            <span class="text-xs text-red-500 mt-1">Este campo es obligatorio</span>
+          }
         </div>
       </div>
     </div>

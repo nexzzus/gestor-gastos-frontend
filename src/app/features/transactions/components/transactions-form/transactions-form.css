@@ -48,21 +48,38 @@
   background: rgba(0, 0, 0, 0.04);
 }
 
-select{
+select {
+  background: #d9e3f6;
+  height: 40px;
+  border-radius: 8px;
+  padding: 0 8px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  border: 2px solid transparent;
+  outline: none;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+select:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+}
+
+select.border-red-500 {
+  border-color: #ef4444 !important;
+}
+
+input[type=date] {
   background: #d9e3f6;
   height: 40px;
   border-radius: 8px;
   padding: 0 8px;
 }
 
-input[type=date]{
-  background: #d9e3f6;
-  height: 40px;
-  border-radius: 8px;
-  padding: 0 8px;
-}
-
-input[type=time]{
+input[type=time] {
   background: #d9e3f6;
   height: 40px;
   border-radius: 8px;
