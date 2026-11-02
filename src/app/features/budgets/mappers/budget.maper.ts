@@ -11,6 +11,11 @@ export function computeStatus(budget: BudgetResponseModel): BudgetStatus {
   return 'activo';
 }
 
-export function toBudgetModel(budget: BudgetResponseModel): BudgetModel{
-  return {budget: budget, status: computeStatus(budget)}
+export function toBudgetModel(raw: any): BudgetModel {
+  const budget: BudgetResponseModel = {
+    ...raw,
+    spentAmount: Number(raw.spentAmount ?? raw.spendAmount ?? 0),
+    amount: Number(raw.amount ?? 0),
+  };
+  return { budget, status: computeStatus(budget) };
 }

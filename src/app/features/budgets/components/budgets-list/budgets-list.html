@@ -129,8 +129,16 @@
         </footer>
       </article>
     } @empty {
-      <div class="col-span-full text-center text-slate-500 text-sm py-6">
-        No hay presupuestos que mostrar.
+      <div class="col-span-full flex flex-col items-center justify-center p-12 bg-white rounded-2xl border border-slate-100 text-center gap-3">
+        <div class="size-14 rounded-2xl bg-indigo-50 text-indigo-500 grid place-items-center">
+          <ng-icon name="matCalendarMonthOutline" size="28" />
+        </div>
+        <div>
+          <h3 class="font-bold text-slate-800 text-base">No hay presupuestos para este periodo</h3>
+          <p class="text-xs text-slate-500 mt-1 max-w-sm">
+            No se han registrado presupuestos que coincidan con este mes. Puedes crear uno nuevo o consultar otro periodo.
+          </p>
+        </div>
       </div>
     }
   </div>
