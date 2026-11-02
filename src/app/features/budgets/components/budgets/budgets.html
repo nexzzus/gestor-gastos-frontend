@@ -1,241 +1,59 @@
-<!-- ENCABEZADO Y CONTROLES PRINCIPALES -->
-<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
-  <!-- Título y descripción -->
-  <div class="flex flex-col gap-1">
-    <div class="flex items-center gap-2">
-      <span class="text-xs font-bold text-primary-4 uppercase tracking-wider">GESTIÓN {{ year() }}</span>
-      <span class="text-slate-300">•</span>
-      <span class="text-xs text-slate-500 font-medium">Actualizado en tiempo real</span>
-    </div>
-    <h1 class="text-3xl md:text-4xl font-semibold text-slate-900 tracking-tight">Presupuestos</h1>
-    <p class="text-sm text-slate-500 max-w-xl">
-      Supervisa tus límites de gasto por categoría, vigencia y progreso en tiempo real con proyección inteligente.
-    </p>
+<!--TITULO Y BOTÓN Nueva Transacción-->
+<div class="flex flex-col md:flex-row justify-between items-center">
+  <div class="text-center md:text-left">
+    <h1 class="text-4xl font-semibold">Presupuestos</h1>
+    <p class="text-gray-500">Revisa y gestiona tus presupuestos financieros.</p>
+  </div>
+  <app-button
+    (click)="goNewBudget()"
+    class="hidden md:block"
+    icon="matPlusOutline"
+    colorBg="bg-primary-4"
+    text="Nuevo presupuesto"
+  />
+</div>
+
+<div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 lg:my-6 gap-4 my-5">
+  <div class="bg-white rounded-lg p-4">
+    <span class="text-sm ">LÍMITE TOTAL MENSUAL</span>
+    <h2 class="text-xl font-bold mt-2 mb-6">{{limitTotal() | currency:'COP':'symbol':'1.0-0' }}</h2>
+    <div class="bg-surface-container-high w-full px-6 py-3 rounded-lg">{{activeBudget()}} categorías activas</div>
   </div>
 
-  <!-- Controles: Selector de Mes, Exportar y Crear Presupuesto -->
-  <div class="w-full lg:w-auto flex flex-col items-stretch lg:items-end gap-2.5 shrink-0">
-    <!-- Fila superior: En desktop (sm+) van juntos Mes + Exportar. En móvil: Mes full-width -->
-    <div class="w-full sm:w-auto flex items-center gap-2">
-      <!-- Selector de fecha (Mes) -->
-      <div class="w-full sm:w-auto flex-1 sm:flex-initial flex items-center justify-between sm:justify-start gap-1 bg-white border border-slate-200/90 rounded-2xl p-1.5 shadow-xs">
-        <button
-          type="button"
-          (click)="prevMonth()"
-          class="size-8 shrink-0 grid place-items-center rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition cursor-pointer"
-          title="Mes anterior"
-          aria-label="Mes anterior"
-        >
-          <ng-icon name="matChevronLeftOutline" size="20"/>
-        </button>
+  <div class="bg-white rounded-lg p-4">
+    <span class="text-sm ">GASTO ACUMULADO</span>
+    <h2 class="text-xl font-bold mt-2 mb-6">{{accumulatedExpense() | currency:'COP':'symbol':'1.0-0' }}</h2>
+    <div class="bg-surface-container-high w-full px-6 py-3 rounded-lg">
+      <ng-icon name="matTrendingDownOutline"/>
+      {{percentExpenseExecuted() | number:'1.1-1'}}% ejecutado</div>
+  </div>
 
-        <div class="flex items-center justify-center gap-1.5 sm:gap-2 px-1 sm:px-2 min-w-0">
-          <ng-icon name="matCalendarMonthOutline" size="18" class="text-primary-4 shrink-0"/>
-          <span class="text-xs sm:text-sm font-bold text-slate-800 whitespace-nowrap">{{ formattedPeriod() }}</span>
+  <div class="bg-white rounded-lg p-4">
+    <span class="text-sm ">DISPONIBLE RESTANTE</span>
+    <h2 class="text-xl font-bold mt-2 mb-6">{{availableRemaining() | currency:'COP':'symbol':'1.0-0' }}</h2>
+    <div class="bg-primary-4/20 w-full px-6 py-3 rounded-lg"
+         [ngClass]="styles[status()].badge"
+    >{{styles[status()].message}}</div>
+  </div>
 
-          <!-- Badge de estado del periodo -->
-          @if (periodStatus() === 'En curso') {
-            <span class="px-2 sm:px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-semibold bg-emerald-100 text-emerald-800 shrink-0">
-              En curso
-            </span>
-          } @else if (periodStatus() === 'Finalizado') {
-            <span class="px-2 sm:px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-semibold bg-slate-100 text-slate-700 shrink-0">
-              Finalizado
-            </span>
-          } @else {
-            <span class="px-2 sm:px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-semibold bg-blue-100 text-blue-800 shrink-0">
-              Próximo
-            </span>
-          }
-        </div>
-
-        <button
-          type="button"
-          (click)="nextMonth()"
-          class="size-8 shrink-0 grid place-items-center rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition cursor-pointer"
-          title="Mes siguiente"
-          aria-label="Mes siguiente"
-        >
-          <ng-icon name="matChevronRightOutline" size="20"/>
-        </button>
-      </div>
-
-      <!-- Botón Exportar (visible en desktop en la fila superior) -->
-      <button
-        type="button"
-        (click)="exportBudgets()"
-        class="hidden sm:flex h-11 items-center gap-1.5 bg-white border border-slate-200/90 hover:bg-slate-50 text-slate-700 font-semibold text-sm px-4 rounded-2xl shadow-xs transition cursor-pointer active:scale-98 shrink-0"
-        title="Exportar presupuestos a Excel"
-      >
-        <ng-icon name="matDownloadOutline" size="18" class="text-slate-500 shrink-0"/>
-        <span>Exportar</span>
-      </button>
+  <div class="bg-white rounded-lg p-4">
+    <span class="text-sm ">CIERRE DE PERIODO</span>
+    <div class="flex items-center mt-2 mb-6">
+      <h2 class="text-xl font-bold pr-1">{{daysLeft}}</h2>
+      <span>días</span>
     </div>
-
-    <!-- Fila de acción: en móvil Exportar y Nuevo Presupuesto juntos; en desktop Nuevo Presupuesto -->
-    <div class="w-full sm:w-auto flex items-center gap-2">
-      <!-- Botón Exportar (solo visible en móvil junto a Nuevo Presupuesto) -->
-      <button
-        type="button"
-        (click)="exportBudgets()"
-        class="sm:hidden flex-1 h-11 flex items-center justify-center gap-1.5 bg-white border border-slate-200/90 hover:bg-slate-50 text-slate-700 font-semibold text-sm px-3 rounded-2xl shadow-xs transition cursor-pointer active:scale-98"
-        title="Exportar presupuestos a Excel"
-      >
-        <ng-icon name="matDownloadOutline" size="18" class="text-slate-500 shrink-0"/>
-        <span>Exportar</span>
-      </button>
-
-      <!-- Botón Nuevo Presupuesto -->
-      <button
-        type="button"
-        (click)="goNewBudget()"
-        class="flex-1 sm:flex-initial sm:w-auto h-11 flex items-center justify-center gap-2 bg-primary-4 hover:bg-primary-4/90 text-white font-semibold text-sm px-4 sm:px-5 rounded-2xl shadow-sm hover:shadow transition cursor-pointer active:scale-98 whitespace-nowrap"
-      >
-        <ng-icon name="matPlusOutline" size="20" class="shrink-0"/>
-        <span>Nuevo Presupuesto</span>
-      </button>
-    </div>
+    <div class="bg-surface-container-high w-full px-6 py-3 rounded-lg capitalize">Cierre: {{ lastDay }} de {{monthName}}, 2025</div>
   </div>
 </div>
 
-<!-- TARJETAS DE RESUMEN METRICAS -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-6">
-  <!-- LÍMITE TOTAL MENSUAL -->
-  <div class="flex flex-col justify-between bg-white rounded-2xl p-5 shadow-xs border border-slate-100">
-    <div class="flex items-center justify-between">
-      <span class="text-sm font-bold text-slate-500 uppercase tracking-wider">LÍMITE TOTAL MENSUAL</span>
-    </div>
-    <div class="my-3">
-      <h2 class="text-xl font-semibold text-slate-900">{{ limitTotal() | currency:'COP':'symbol':'1.0-0' }}</h2>
-    </div>
-    <div
-      class="bg-surface-container-high text-slate-700 text-xs font-medium px-4 py-2 rounded-xl flex items-center gap-2">
-      <span class="size-1.5 rounded-full bg-slate-500"></span>
-      <span>{{ activeBudget() }} categorías activas</span>
-    </div>
-  </div>
-
-  <!-- GASTO ACUMULADO -->
-  <div class="flex flex-col justify-between bg-white rounded-2xl p-5 shadow-xs border border-slate-100">
-    <div class="flex items-center justify-between">
-      <span class="text-sm font-bold text-slate-500 uppercase tracking-wider">GASTO ACUMULADO</span>
-    </div>
-    <div class="my-3">
-      <h2 class="text-xl font-bold text-slate-900">{{ accumulatedExpense() | currency:'COP':'symbol':'1.0-0' }}</h2>
-    </div>
-    <div
-      class="bg-surface-container-high text-slate-700 text-xs font-medium px-4 py-2 rounded-xl flex items-center gap-2">
-      <ng-icon name="matTrendingDownOutline" size="16" class="text-slate-600"/>
-      <span>{{ percentExpenseExecuted() | number:'1.1-1' }}% ejecutado</span>
-    </div>
-  </div>
-
-  <!-- DISPONIBLE RESTANTE -->
-  <div class="flex flex-col justify-between bg-white rounded-2xl p-5 shadow-xs border border-slate-100">
-    <div class="flex items-center justify-between">
-      <span class="text-sm font-bold text-slate-500 uppercase tracking-wider">DISPONIBLE RESTANTE</span>
-    </div>
-    <div class="my-3">
-      <h2 class="text-2xl font-bold" [ngClass]="availableRemaining() >= 0 ? 'text-slate-900' : 'text-red-600'">
-        {{ availableRemaining() | currency:'COP':'symbol':'1.0-0' }}
-      </h2>
-    </div>
-    <div
-      class="text-xs font-medium px-4 py-2 rounded-xl flex items-center gap-2"
-      [ngClass]="styles[status()].badge"
-    >
-      <span class="size-1.5 rounded-full" [ngClass]="status() === 'activo' ? 'bg-emerald-600' : 'bg-red-600'"></span>
-      <span>{{ styles[status()].message }}</span>
-    </div>
-  </div>
-
-  <!-- CIERRE DE PERIODO -->
-  <div class="flex flex-col justify-between bg-white rounded-2xl p-5 shadow-xs border border-slate-100">
-    <div class="flex items-center justify-between">
-      <span class="text-sm font-bold text-slate-500 uppercase tracking-wider">CIERRE DE PERIODO</span>
-    </div>
-    <div class="my-3 flex items-baseline gap-1.5">
-      <h2 class="text-xl font-bold text-slate-900">{{ daysLeft() }}</h2>
-      <span class="text-sm font-medium text-slate-500">días</span>
-    </div>
-    <div class="bg-surface-container-high text-slate-700 text-xs font-medium px-4 py-2 rounded-xl capitalize truncate">
-      Corte: {{ lastDay() }} de {{ monthName() }}, {{ year() }}
-    </div>
-  </div>
-</div>
-
-<!-- DESEMPEÑO GLOBAL DEL PRESUPUESTO -->
-<div class="bg-white rounded-2xl p-6 shadow-xs border border-slate-100 flex flex-col gap-4 mb-6">
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-    <div class="flex items-center gap-3">
-      <div class="size-11 rounded-2xl bg-emerald-50 text-emerald-600 grid place-items-center shrink-0">
-        <ng-icon name="matTrendingUpOutline" size="22"/>
-      </div>
-      <div>
-        <h2 class="text-base font-bold text-slate-900 leading-tight">Desempeño Global del Presupuesto</h2>
-        <p class="text-xs text-slate-500 mt-0.5">
-          Cálculo en base a {{ accumulatedExpense() | currency:'COP':'symbol':'1.0-0' }} consumidos
-          de {{ limitTotal() | currency:'COP':'symbol':'1.0-0' }} presupuestados.
-        </p>
-      </div>
-    </div>
-
-    @if (limitTotal() > 0 && availableRemaining() >= 0) {
-      <div
-        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 self-start sm:self-auto">
-        <ng-icon name="solarStream" size="14"/>
-        <span>A este ritmo ahorrarás {{ availableRemaining() | currency:'COP':'symbol':'1.0-0' }}</span>
-      </div>
-    } @else if (limitTotal() > 0 && availableRemaining() < 0) {
-      <div
-        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-red-100 text-red-800 self-start sm:self-auto">
-        <span>Presupuesto sobrepasado por {{ (accumulatedExpense() - limitTotal()) | currency:'COP':'symbol':'1.0-0' }}</span>
-      </div>
-    }
-  </div>
-
-  <!-- Barra de progreso -->
-  <div class="flex flex-col gap-2">
-    <div class="flex justify-between text-xs font-semibold text-slate-700">
-      <span>{{ percentExpenseExecuted() | number:'1.1-1' }}
-        % Gastado ({{ accumulatedExpense() | currency:'COP':'symbol':'1.0-0' }})</span>
-      <span class="text-slate-500">
-        {{ (100 - percentExpenseExecuted() > 0 ? 100 - percentExpenseExecuted() : 0) | number:'1.1-1' }}% Margen Disponible ({{ availableRemaining() | currency:'COP':'symbol':'1.0-0' }}
-        )
-      </span>
-    </div>
-
-    <div class="h-3 w-full rounded-full bg-slate-100 overflow-hidden">
-      <div
-        class="h-full rounded-full bg-emerald-500 transition-all duration-500"
-        [style.width.%]="percentExpenseExecuted() > 100 ? 100 : percentExpenseExecuted()"
-      ></div>
-    </div>
-
-    <div class="flex justify-between items-center text-xs text-slate-500 pt-1">
-      <div class="flex items-center gap-4">
-        <span class="flex items-center gap-1.5">
-          <span class="size-2 rounded-full bg-emerald-500"></span> Gastado
-        </span>
-        <span class="flex items-center gap-1.5">
-          <span class="size-2 rounded-full bg-slate-300"></span> Remanente
-        </span>
-      </div>
-      <span>Objetivo de Ahorro: {{ (100 - percentExpenseExecuted() > 0 ? (100 - percentExpenseExecuted() | number:'1.0-0') : 0) }}
-        %</span>
-    </div>
-  </div>
-</div>
-
-<!-- LISTA DE PRESUPUESTOS POR CATEGORÍA -->
 <app-budgets-list [budgets]="budgets()"/>
 
-<!-- BOTON CREAR PRESUPUESTO (MÓVIL FLOTANTE) -->
-<button
-  type="button"
+<!--BOTON NUEVA TRANSACCIÓN (MÓVIL)-->
+<app-button
   (click)="goNewBudget()"
-  class="fixed bottom-5 right-5 z-20 md:hidden size-14 rounded-full bg-primary-4 text-white shadow-lg flex items-center justify-center cursor-pointer active:scale-95 transition"
-  aria-label="Crear nuevo presupuesto"
->
-  <ng-icon name="matPlusOutline" size="28"/>
-</button>
+  class="fixed bottom-5 right-5 z-10 md:hidden"
+  icon="matPlusOutline"
+  colorBg="bg-primary-4"
+  text=""
+/>
+
