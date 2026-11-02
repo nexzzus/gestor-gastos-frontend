@@ -15,6 +15,6 @@ export class BudgetsService {
   }
 
   getBudgets(): Observable<PageResponse<BudgetResponseModel>>{
-    return this.http.get<PageResponse<BudgetResponseModel>>(`${this.apiUrl}/user`);
+    return this.http.get<PageResponse<BudgetResponseModel>>(`${this.apiUrl}/user?size=100`);
   }
 }
