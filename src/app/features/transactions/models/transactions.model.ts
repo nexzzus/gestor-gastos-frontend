@@ -3,7 +3,7 @@ import { CategoryModel } from '@core/models/category.model';
 export interface TransactionRequestModel {
   title: string;
   amount: number;
-  // createdAt: string;
+  createdAt: string;
   categoryId: string;
   // userId: string;
   description?: string;

@@ -95,7 +95,7 @@
       <h1 class="text-2xl font-medium">Detalles del movimiento</h1>
       <div class="grid grid-cols-2 gap-x-5 mt-8">
         <div class="flex flex-col">
-          <label for="category">Categoría</label>
+          <label for="category">Categoría <span class="text-red-500 ml-1">*</span></label>
           <select name="category" id="category" formControlName="category" class="">
             @if (type() === 'ingreso') {
               <option value="{{incomeCategoryId()}}" selected>INGRESO</option>
@@ -111,7 +111,7 @@
           </select>
         </div>
         <div>
-          <label for="paymentMethod">Método de pago</label>
+          <label for="paymentMethod">Método de pago <span class="text-red-500 ml-1">*</span></label>
           <select name="paymentMethod" id="paymentMethod" formControlName="paymentMethod" class="w-full">
             <option value="EFECTIVO">EFECTIVO</option>
             <option value="TARJETA_CREDITO">TARJETA_CREDITO</option>
@@ -119,6 +119,25 @@
             <option value="TRANSFERENCIA_BANCARIA">TRANSFERENCIA_BANCARIA</option>
           </select>
         </div>
+      </div>
+    </div>
+
+    <!--    FECHA Y HORA DEL MOVIMIENTO-->
+    <div class="grid grid-cols-2 gap-x-5 mt-8">
+      <app-input
+        label="Fecha"
+        type="date"
+        id="date"
+        formControlName="date"
+      />
+
+      <div class="flex flex-col">
+        <label for="time">Hora <span class="text-red-500 ml-1">*</span></label>
+        <input
+          type="time"
+          id="time"
+          formControlName="hour"
+          class="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
       </div>
     </div>
 

@@ -49,14 +49,11 @@ export class TransactionsForm implements OnInit {
     this.getCategories();
   }
 
-  private userData = localStorage.getItem('user');
-  private userId: string | null = null;
-
   transactForm = this.fb.group({
     type: ['gasto', Validators.required],
     amount: [null as number | null, [Validators.required, Validators.min(0.01)]],
-    // date: ['', Validators.required], // yyyy-MM-dd
-    // hour: ['', Validators.required], // HH:mm o HH:mm:ss
+    date: ['', Validators.required], // yyyy-MM-dd
+    hour: ['', Validators.required], // HH:mm o HH:mm:ss
     title: ['', [Validators.required, Validators.minLength(3)]],
     description: [null, [Validators.minLength(5)]],
     category: ['', Validators.required],
@@ -72,6 +69,31 @@ export class TransactionsForm implements OnInit {
     initialValue: this.transactForm.get('amount')!.value,
   });
 
+  buildLocalDateTime(): string | null {
+    const dateValue = this.transactForm.get('date')?.value;
+    const hourValue = this.transactForm.get('hour')?.value;
+
+    if (!dateValue || !hourValue) {
+      return null;
+    }
+
+    const [year, month, day] = String(dateValue).split('-').map(Number);
+    const [hours, minutes, seconds = '00'] = String(hourValue).split(':');
+
+    const localDate = new Date(
+      year,
+      month - 1,
+      day,
+      Number(hours),
+      Number(minutes),
+      Number(seconds),
+    );
+
+    const pad = (value: number) => String(value).padStart(2, '0');
+
+    return `${localDate.getFullYear()}-${pad(localDate.getMonth() + 1)}-${pad(localDate.getDate())}T${pad(localDate.getHours())}:${pad(localDate.getMinutes())}:${pad(localDate.getSeconds())}`;
+  }
+
   private extractTransactionData() {
     if (this.transactForm.invalid) {
       this.transactForm.markAllAsTouched();
@@ -81,7 +103,7 @@ export class TransactionsForm implements OnInit {
     const dto: TransactionRequestModel = {
       title: this.transactForm.value.title!,
       amount: this.transactForm.value.amount!,
-      // createdAt: this.buildLocalDateTime()!,
+      createdAt: this.buildLocalDateTime()!,
       categoryId: this.transactForm.value.category!,
       description: this.transactForm.value.description!,
       paymentMethod: this.transactForm.value.paymentMethod!,
@@ -165,7 +187,7 @@ export class TransactionsForm implements OnInit {
 
   changeType = computed(() => {
     console.log(`Tipo de transacción cambiado a: ${this.type()}`);
-  })
+  });
 
   getCategories() {
     this.categoryService.getCategories().subscribe({
@@ -184,9 +206,7 @@ export class TransactionsForm implements OnInit {
   }
 
   incomeCategoryId = computed(() => {
-    const incomeCategory = this.categories().find((c) =>
-      c?.name?.toUpperCase() === 'INGRESO'
-    );
+    const incomeCategory = this.categories().find((c) => c?.name?.toUpperCase() === 'INGRESO');
     return incomeCategory?.id;
   });
 }
