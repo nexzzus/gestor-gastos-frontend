@@ -33,7 +33,7 @@ export class InputComponent implements ControlValueAccessor {
   // ─────────────────────────────────────
 
   label = input('');
-  type = input<'text' | 'email' | 'password' | 'number' | 'date'>('text');
+  type = input<'text' | 'email' | 'password' | 'number' | 'date' | 'time'>('text');
   placeholder = input('');
   id = input('');
   autocomplete = input('off');
