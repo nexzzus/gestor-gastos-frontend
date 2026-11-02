@@ -49,4 +49,7 @@ export interface DashBoardResponseModel {
   expensesByCategory: ExpensesByCategoryModel[];
   recentActivity: RecentActivityResponseModel[];
   budgetsByCategory: ExpensesByCategoryProgressModel[];
+  percentageVsLastMonth?: number;
+  balancePercentageVsLastMonth?: number;
+  incomeTarget?: number;
 }

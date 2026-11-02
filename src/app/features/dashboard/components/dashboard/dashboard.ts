@@ -2,7 +2,12 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { matPlusOutline } from '@ng-icons/material-icons/outline';
 import { CurrencyPipe, DatePipe, DecimalPipe, NgClass } from '@angular/common';
-import { matCheckCircleOutline, matTrendingUpOutline } from '@ng-icons/material-symbols/outline';
+import {
+  matCheckCircleOutline,
+  matScheduleOutline,
+  matTrendingDownOutline,
+  matTrendingUpOutline,
+} from '@ng-icons/material-symbols/outline';
 import { DashboardServices } from '../../services/dashboard-services';
 import {
   DashBoardResponseModel,
@@ -13,13 +18,23 @@ import { Router } from '@angular/router';
 import { Button } from '@shared/components/button/button';
 import { STATUS_STYLES } from '@shared/constants/budget-status-styles';
 import { StatusCategoryPipe } from '@shared/pipes/status-category-pipe';
+import { TransactionService } from '@features/transactions/services/transaction-service';
+import { TransactionResponseModel } from '@features/transactions/models/transactions.model';
 
 @Component({
   imports: [NgIcon, CurrencyPipe, DatePipe, Button, NgClass, StatusCategoryPipe, DecimalPipe],
   selector: 'app-dashboard',
   styleUrl: './dashboard.css',
   templateUrl: './dashboard.html',
-  providers: [provideIcons({ matPlusOutline, matCheckCircleOutline, matTrendingUpOutline })],
+  providers: [
+    provideIcons({
+      matPlusOutline,
+      matCheckCircleOutline,
+      matTrendingUpOutline,
+      matTrendingDownOutline,
+      matScheduleOutline,
+    }),
+  ],
 })
 export class Dashboard implements OnInit {
   totalBalance = signal<number>(0);
@@ -30,6 +45,47 @@ export class Dashboard implements OnInit {
 
   totalBudgetAmount = signal<number>(0);
   totalExpenseAmount = signal<number>(0);
+
+  // Porcentaje de cambio en el balance respecto al mes pasado
+  balancePercentage = signal<number>(0);
+
+  // Estado del objetivo de ingresos
+  incomeStatus = computed(() => {
+    const inc = this.income();
+    const exp = this.expenses();
+    const budget = this.totalBudgetAmount();
+
+    if (inc === 0) {
+      return {
+        text: 'Sin ingresos este mes',
+        icon: 'matScheduleOutline',
+        color: 'text-slate-500',
+      };
+    }
+
+    // Si los ingresos cubren el presupuesto asignado o superan los gastos actuales
+    if ((budget > 0 && inc >= budget) || (budget === 0 && inc >= exp)) {
+      return {
+        text: 'En camino al objetivo',
+        icon: 'matCheckCircleOutline',
+        color: 'text-primary-4',
+      };
+    }
+
+    if (inc < exp) {
+      return {
+        text: 'Por debajo del objetivo',
+        icon: 'matTrendingDownOutline',
+        color: 'text-amber-600',
+      };
+    }
+
+    return {
+      text: 'En camino al objetivo',
+      icon: 'matCheckCircleOutline',
+      color: 'text-primary-4',
+    };
+  });
 
   percentBudgetExecuted = computed(() => {
     const limit = this.totalBudgetAmount();
@@ -47,6 +103,7 @@ export class Dashboard implements OnInit {
 
   private readonly router = inject(Router);
   protected dashService = inject(DashboardServices);
+  private readonly transactionService = inject(TransactionService);
 
   ngOnInit(): void {
     this.loadDashboardSummary();
@@ -59,6 +116,18 @@ export class Dashboard implements OnInit {
         this.income.set(data.totalIncome);
         this.expenses.set(data.totalExpense);
         this.recentActivity.set(data.recentActivity ?? []);
+
+        // Si el backend incluye la métrica directamente, usarla
+        if (data.percentageVsLastMonth !== undefined) {
+          this.balancePercentage.set(data.percentageVsLastMonth);
+        } else if (data.balancePercentageVsLastMonth !== undefined) {
+          this.balancePercentage.set(data.balancePercentageVsLastMonth);
+        } else {
+          this.loadVsLastMonthComparison();
+        }
+
+        this.totalBudgetAmount.set(0);
+        this.totalExpenseAmount.set(0);
 
         data.budgetsByCategory?.forEach((category) => {
           this.totalBudgetAmount.update((value) => value + category.budgetAmount);
@@ -120,6 +189,59 @@ export class Dashboard implements OnInit {
         console.error('Error al cargar el resumen del dashboard', error);
       },
     });
+  }
+
+  loadVsLastMonthComparison(): void {
+    this.transactionService.getTransactions(0, 100).subscribe({
+      next: (res) => {
+        this.calculateVsLastMonth(res.content ?? []);
+      },
+      error: (err) => {
+        console.warn('No se pudieron obtener transacciones para calcular vs mes pasado', err);
+      },
+    });
+  }
+
+  calculateVsLastMonth(transactions: TransactionResponseModel[]): void {
+    if (!transactions || transactions.length === 0) {
+      this.balancePercentage.set(0);
+      return;
+    }
+
+    const now = new Date();
+    const currYear = now.getFullYear();
+    const currMonth = now.getMonth();
+
+    const prevDate = new Date(currYear, currMonth - 1, 1);
+    const prevYear = prevDate.getFullYear();
+    const prevMonth = prevDate.getMonth();
+
+    let currMonthNet = 0;
+    let prevMonthNet = 0;
+
+    for (const t of transactions) {
+      if (!t.createdAt) continue;
+      const tDate = new Date(t.createdAt);
+      const tYear = tDate.getFullYear();
+      const tMonth = tDate.getMonth();
+      const amount = Number(t.amount) || 0;
+      const net = t.type === 'INCOME' ? amount : -amount;
+
+      if (tYear === currYear && tMonth === currMonth) {
+        currMonthNet += net;
+      } else if (tYear === prevYear && tMonth === prevMonth) {
+        prevMonthNet += net;
+      }
+    }
+
+    if (prevMonthNet !== 0) {
+      const pct = ((currMonthNet - prevMonthNet) / Math.abs(prevMonthNet)) * 100;
+      this.balancePercentage.set(Math.round(pct * 10) / 10);
+    } else if (currMonthNet !== 0) {
+      this.balancePercentage.set(currMonthNet > 0 ? 100 : -100);
+    } else {
+      this.balancePercentage.set(0);
+    }
   }
 
   goNewTransaction() {

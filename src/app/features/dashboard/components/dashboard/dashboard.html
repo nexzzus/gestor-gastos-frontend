@@ -22,14 +22,12 @@
     <span class="ml-2 text-gray-600 ">COP</span>
     <br>
     <div class="flex items-center gap-2 pt-4">
-      <!-- Etiqueta del porcentaje con inline-flex y algo de padding (px-2 py-1) -->
       <span
-        class="text-sm text-primary-4 bg-surface-container-high px-2 py-1 rounded-full inline-flex justify-center items-center gap-1 font-medium">
-    <ng-icon name="matTrendingUpOutline"></ng-icon>
-    +4.2%
-  </span>
-
-      <!-- Texto descriptivo (sin padding superior propio para que se centre con la etiqueta) -->
+        class="text-sm px-2.5 py-1 rounded-full inline-flex justify-center items-center gap-1 font-semibold"
+        [ngClass]="balancePercentage() >= 0 ? 'text-primary-4 bg-surface-container-high' : 'text-red-700 bg-red-50'">
+        <ng-icon [name]="balancePercentage() >= 0 ? 'matTrendingUpOutline' : 'matTrendingDownOutline'" />
+        {{ balancePercentage() >= 0 ? '+' : '' }}{{ balancePercentage() | number:'1.1-1' }}%
+      </span>
       <p class="text-sm text-slate-600">vs el mes pasado</p>
     </div>
   </div>
@@ -38,9 +36,9 @@
     <h2 class="font-semibold text-sm text-gray-500 mb-4">INGRESOS</h2>
     <span class="font-semibold text-xl mt-5">{{ income() | currency:'COP':'symbol':'1.0-0' }}</span>
     <hr class="mt-4 mb-3 text-gray-300">
-    <p class="text-sm text-primary-4 flex justify-center items-center gap-x-1">
-      <ng-icon name="matCheckCircleOutline "/>
-      En camino al objetivo
+    <p class="text-sm flex justify-center items-center gap-x-1.5" [ngClass]="incomeStatus().color">
+      <ng-icon [name]="incomeStatus().icon" />
+      {{ incomeStatus().text }}
     </p>
   </div>
 
